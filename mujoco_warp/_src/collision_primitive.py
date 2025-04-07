@@ -256,6 +256,40 @@ def plane_box(
       break
 
 
+@wp.func
+def plane_ellipsoid(
+  plane: Geom,
+  ellipsoid: Geom,
+  worldid: int,
+  d: Data,
+  margin: float,
+  geom_indices: wp.vec2i,
+):
+  """Calculates one contact between an ellipsoid and a plane."""
+  n = plane.normal
+  size = ellipsoid.size
+
+  # transform plane normal into ellipsoid local frame
+  local_n = wp.transpose(ellipsoid.rot) * n
+
+  # scale by ellipsoid size and normalize to find support direction
+  scaled_n = local_n * size
+  norm_scaled_n = wp.normalize(scaled_n)
+  sphere_support = -norm_scaled_n
+
+  # calculate contact point on ellipsoid surface in world coordinates
+  support_scaled = sphere_support * size
+  world_support = ellipsoid.rot * support_scaled
+  surface_pos = ellipsoid.pos + world_support
+
+  # calculate distance and contact position
+  dist = wp.dot(n, surface_pos - plane.pos)
+  contact_pos = surface_pos - n * dist * 0.5
+
+  frame = make_frame(n)
+  write_contact(d, dist, contact_pos, frame, margin, geom_indices, worldid)
+
+
 @wp.kernel
 def _primitive_narrowphase(
   m: Model,
@@ -288,6 +322,8 @@ def _primitive_narrowphase(
     plane_capsule(geom1, geom2, worldid, d, margin, geoms)
   elif type1 == int(GeomType.PLANE.value) and type2 == int(GeomType.BOX.value):
     plane_box(geom1, geom2, worldid, d, margin, geoms)
+  elif type1 == int(GeomType.PLANE.value) and type2 == int(GeomType.ELLIPSOID.value):
+    plane_ellipsoid(geom1, geom2, worldid, d, margin, geoms)
   elif type1 == int(GeomType.CAPSULE.value) and type2 == int(GeomType.CAPSULE.value):
     capsule_capsule(geom1, geom2, worldid, d, margin, geoms)
   elif type1 == int(GeomType.SPHERE.value) and type2 == int(GeomType.CAPSULE.value):

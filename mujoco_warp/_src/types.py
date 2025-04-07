@@ -180,13 +180,15 @@ class GeomType(enum.IntEnum):
     SPHERE: sphere
     CAPSULE: capsule
     BOX: box
+    ELLIPSOID: ellipsoid
   """
 
   PLANE = mujoco.mjtGeom.mjGEOM_PLANE
   SPHERE = mujoco.mjtGeom.mjGEOM_SPHERE
   CAPSULE = mujoco.mjtGeom.mjGEOM_CAPSULE
   BOX = mujoco.mjtGeom.mjGEOM_BOX
-  # unsupported: HFIELD, ELLIPSOID, CYLINDER, MESH, SDF
+  ELLIPSOID = mujoco.mjtGeom.mjGEOM_ELLIPSOID
+  # unsupported: HFIELD, CYLINDER, MESH, SDF
   # ARROW*, LINE, LINEBOX, FLEX, SKIN, LABEL, TRIANGLE
 
 

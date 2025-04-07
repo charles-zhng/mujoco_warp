@@ -115,6 +115,17 @@ class PrimitiveTest(parameterized.TestCase):
           </worldbody>
         </mujoco>
         """,
+    "plane_ellipsoid": """
+        <mujoco>
+          <worldbody>
+            <geom name="floor" size="0 0 .05" type="plane"/>
+            <body pos="0 0 0.03" euler="45 0 0">
+          <freejoint/>
+          <geom size=".15 .03 .05" type="ellipsoid"/>
+        </body>
+          </worldbody>
+        </mujoco>
+        """,
   }
 
   @parameterized.parameters(
@@ -124,6 +135,7 @@ class PrimitiveTest(parameterized.TestCase):
     "plane_capsule",
     "capsule_capsule",
     "sphere_capsule",
+    "plane_ellipsoid",
   )
   def test_primitives(self, name):
     """Tests collision primitive functions."""
